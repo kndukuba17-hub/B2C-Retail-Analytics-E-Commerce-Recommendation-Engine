@@ -1,27 +1,43 @@
-# 🛒 E-Commerce Recommendation Engine (Item-Based Collaborative Filtering)
+# 🛒 E-Commerce Recommendation Engine — Real Data, Real Evaluation
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-CosineSimilarity-orange)
-![Status](https://img.shields.io/badge/Status-Real--data%20upgrade%20in%20progress-yellow)
+![Data](https://img.shields.io/badge/Data-Real%20%7C%20805k%20transactions-brightgreen)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
-An item-based collaborative-filtering recommender that suggests the next product a customer is most likely to buy, based on co-purchase behaviour across the customer base.
+An **item-based collaborative-filtering** recommender ("customers who bought this also bought…") — evaluated **honestly** against a held-out future period and compared to a popularity baseline.
 
-> **Behavioural angle:** "customers who bought X also bought Y" is collective behaviour made useful. The engine learns implicit product relationships from what people actually do, not from product metadata.
+Built on the real **[UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii)** dataset — 805k clean transactions, **5,878 customers, 4,631 products**.
+
+> **Behavioural angle:** the engine learns implicit product relationships purely from collective purchasing behaviour — what people *actually* buy together — with no product metadata.
 
 ---
 
-## ⚙️ How it works
-1. **User–item matrix** — transactional data is pivoted into a sparse customer × product matrix of purchase history.
-2. **Item similarity** — **cosine similarity** measures how often products are co-purchased, producing an item-to-item similarity matrix.
-3. **Recommendation** — given a customer's past purchases, the engine returns the top-N most similar products they haven't bought yet.
+## 📊 Results (offline, temporal hold-out, k=10)
 
-This is an **unsupervised** recommender, so it's evaluated by inspecting recommendation quality rather than a single accuracy score. A held-out evaluation (see roadmap) is the next step.
+| Method | precision@10 | recall@10 | hit-rate@10 |
+|--------|-------------:|----------:|------------:|
+| **Item-based CF** | **0.058** | **0.022** | **0.35** |
+| Popularity baseline | 0.040 | 0.013 | 0.28 |
 
-## ⚠️ Data status (honest note)
-The committed notebook uses a **synthetic transaction dataset** (a DTC accessories brand). The repo is being upgraded to real transaction data — the **[UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii)** dataset — so the co-purchase relationships are real.
+**Collaborative filtering beats "just recommend the best-sellers" by ~1.5× on precision**, and gives **1 in 3 returning customers at least one correct recommendation** in their top 10 — measured on **2,291 customers' actual future purchases**.
+
+![Recommender evaluation](images/reco_evaluation.png)
+
+*(Absolute precision of ~6% is normal for sparse retail CF — the honest, meaningful signal is the lift over the popularity baseline and the 35% hit-rate.)*
+
+---
+
+## 🧪 Methodology
+1. **Cleaning** — drop missing customers, cancellations and returns → 805k transactions ([`src/recommender.py`](src/recommender.py)).
+2. **Leakage-safe temporal split** — build similarities on transactions up to a cutoff; evaluate on the final 3 months. Keep products bought by ≥20 customers so similarities are reliable.
+3. **User–item matrix** — sparse binary customer × product matrix (~2.4% dense).
+4. **Item–item similarity** — cosine similarity between product vectors.
+5. **Qualitative sanity check** — inspect the most-similar products for a sample item (they're sensible co-purchases) *before* trusting any metric.
+6. **Offline evaluation** — precision@k / recall@k / hit-rate at k = 5, 10, 20 vs a popularity baseline.
 
 ## 🧰 Tech Stack
-Python · pandas · NumPy · scikit-learn (cosine similarity / pairwise metrics) · Matplotlib · Seaborn
+Python · pandas · NumPy · SciPy (sparse) · scikit-learn (cosine similarity) · Matplotlib · Seaborn
 
 ---
 
@@ -32,7 +48,8 @@ Python · pandas · NumPy · scikit-learn (cosine similarity / pairwise metrics)
 ├── notebooks/
 │   └── ecommerce_recommendation_engine.ipynb
 ├── src/
-├── data/          # UCI Online Retail II download instructions — see data/README.md
+│   └── recommender.py        # reusable ItemCFRecommender class + cleaning
+├── data/                     # download instructions — see data/README.md
 ├── images/
 └── docs/
 ```
@@ -42,11 +59,17 @@ Python · pandas · NumPy · scikit-learn (cosine similarity / pairwise metrics)
 git clone https://github.com/kndukuba17-hub/B2C-Retail-Analytics-E-Commerce-Recommendation-Engine.git
 cd B2C-Retail-Analytics-E-Commerce-Recommendation-Engine
 pip install -r requirements.txt
+# download online_retail_II.xlsx into data/ (see data/README.md), then:
 jupyter notebook notebooks/ecommerce_recommendation_engine.ipynb
 ```
-Runs on Jupyter or Google Colab.
 
 ## 🗺️ Roadmap
-- Swap synthetic transactions for real UCI Online Retail II data.
-- Add an offline evaluation (precision@k / recall@k) using a held-out set of purchases.
-- Compare item-based CF against a matrix-factorisation baseline.
+- TF-IDF / BM25 weighting of the user-item matrix.
+- Matrix factorisation (implicit ALS) as a stronger benchmark.
+- Blend CF with a popularity/content fallback to handle cold-start.
+
+---
+### 🎤 Interview talking points
+- *"How do you evaluate a recommender without labels?"* Temporal split — similarities from the past, scored against customers' *actual* future purchases (precision@k / recall@k / hit-rate).
+- *"Why compare to popularity?"* It's the honest baseline; a recommender that can't beat best-sellers adds no value. Mine beats it ~1.5×.
+- *"Cold-start?"* CF needs history — fall back to popularity/content for new users and products.
