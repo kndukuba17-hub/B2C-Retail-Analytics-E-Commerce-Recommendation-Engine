@@ -1,0 +1,8 @@
+# E-Commerce Recommendation Engine — dependencies
+pandas>=1.5
+numpy>=1.23
+scikit-learn>=1.2
+matplotlib>=3.6
+seaborn>=0.12
+openpyxl>=3.1        # to read the UCI Online Retail II .xlsx
+jupyter>=1.0

@@ -1,20 +1,52 @@
-# B2C Retail Analytics: E-Commerce Recommendation Engine
+# 🛒 E-Commerce Recommendation Engine (Item-Based Collaborative Filtering)
 
-## Executive Summary
-In the Direct-to-Consumer (DTC) retail space, customer retention and cross-selling are the primary drivers of profitability. Generic digital storefronts suffer from high bounce rates, whereas personalised shopping experiences significantly increase Customer Lifetime Value (CLV) and average order value.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-CosineSimilarity-orange)
+![Status](https://img.shields.io/badge/Status-Real--data%20upgrade%20in%20progress-yellow)
 
-This project bridges consumer psychology and machine learning by developing an **Item-Based Collaborative Filtering Recommendation Engine**. 
+An item-based collaborative-filtering recommender that suggests the next product a customer is most likely to buy, based on co-purchase behaviour across the customer base.
 
-**Commercial Objective:** Deploy a programmatic recommendation system that analyses historical purchasing behaviour to accurately predict and suggest the next product a customer is most likely to buy, driving cross-sell revenue and personalising the e-commerce experience.
+> **Behavioural angle:** "customers who bought X also bought Y" is collective behaviour made useful. The engine learns implicit product relationships from what people actually do, not from product metadata.
 
-## Technical Stack
-* **Language:** Python
-* **Machine Learning:** Scikit-Learn (Cosine Similarity, Pairwise Metrics)
-* **Data Processing & Transformation:** Pandas, NumPy
-* **Market Visualisation:** Matplotlib, Seaborn
+---
 
-## Core Methodology
-1. **DTC Data Simulation:** Generates a high-fidelity dataset of retail transactions, mimicking a DTC accessories brand (e.g., purchases of rings, necklaces, and bracelets). 
-2. **User-Item Matrix Transformation:** Transforms raw transactional data into a sparse matrix, mapping every customer's purchase history against the entire product catalogue.
-3. **Collaborative Filtering:** Utilises **Cosine Similarity** to calculate the mathematical distance between products based on co-purchasing behaviour. If customers frequently buy 'Product A' and 'Product B' together, the algorithm learns this implicit psychological link.
-4. **Dynamic Recommendation:** A custom Python function that ingests a target customer's past purchases and outputs the top 3 highest-probability recommendations to surface on their checkout page.
+## ⚙️ How it works
+1. **User–item matrix** — transactional data is pivoted into a sparse customer × product matrix of purchase history.
+2. **Item similarity** — **cosine similarity** measures how often products are co-purchased, producing an item-to-item similarity matrix.
+3. **Recommendation** — given a customer's past purchases, the engine returns the top-N most similar products they haven't bought yet.
+
+This is an **unsupervised** recommender, so it's evaluated by inspecting recommendation quality rather than a single accuracy score. A held-out evaluation (see roadmap) is the next step.
+
+## ⚠️ Data status (honest note)
+The committed notebook uses a **synthetic transaction dataset** (a DTC accessories brand). The repo is being upgraded to real transaction data — the **[UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii)** dataset — so the co-purchase relationships are real.
+
+## 🧰 Tech Stack
+Python · pandas · NumPy · scikit-learn (cosine similarity / pairwise metrics) · Matplotlib · Seaborn
+
+---
+
+## 📁 Repository Structure
+```
+├── README.md
+├── requirements.txt
+├── notebooks/
+│   └── ecommerce_recommendation_engine.ipynb
+├── src/
+├── data/          # UCI Online Retail II download instructions — see data/README.md
+├── images/
+└── docs/
+```
+
+## 🚀 How to Run
+```bash
+git clone https://github.com/kndukuba17-hub/B2C-Retail-Analytics-E-Commerce-Recommendation-Engine.git
+cd B2C-Retail-Analytics-E-Commerce-Recommendation-Engine
+pip install -r requirements.txt
+jupyter notebook notebooks/ecommerce_recommendation_engine.ipynb
+```
+Runs on Jupyter or Google Colab.
+
+## 🗺️ Roadmap
+- Swap synthetic transactions for real UCI Online Retail II data.
+- Add an offline evaluation (precision@k / recall@k) using a held-out set of purchases.
+- Compare item-based CF against a matrix-factorisation baseline.
