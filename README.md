@@ -1,4 +1,4 @@
-# 🛒 E-Commerce Recommendation Engine — Real Data, Real Evaluation
+# E-Commerce Recommendation Engine — Real Data, Real Evaluation
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-CosineSimilarity-orange)
@@ -13,7 +13,7 @@ Built on the real **[UCI Online Retail II](https://archive.ics.uci.edu/dataset/5
 
 ---
 
-## 📊 Results (offline, temporal hold-out, k=10)
+## Results (offline, temporal hold-out, k=10)
 
 | Method | precision@10 | recall@10 | hit-rate@10 |
 |--------|-------------:|----------:|------------:|
@@ -28,7 +28,7 @@ Built on the real **[UCI Online Retail II](https://archive.ics.uci.edu/dataset/5
 
 ---
 
-## 🧪 Methodology
+## Methodology
 1. **Cleaning** — drop missing customers, cancellations and returns → 805k transactions ([`src/recommender.py`](src/recommender.py)).
 2. **Leakage-safe temporal split** — build similarities on transactions up to a cutoff; evaluate on the final 3 months. Keep products bought by ≥20 customers so similarities are reliable.
 3. **User–item matrix** — sparse binary customer × product matrix (~2.4% dense).
@@ -36,12 +36,12 @@ Built on the real **[UCI Online Retail II](https://archive.ics.uci.edu/dataset/5
 5. **Qualitative sanity check** — inspect the most-similar products for a sample item (they're sensible co-purchases) *before* trusting any metric.
 6. **Offline evaluation** — precision@k / recall@k / hit-rate at k = 5, 10, 20 vs a popularity baseline.
 
-## 🧰 Tech Stack
+## Tech Stack
 Python · pandas · NumPy · SciPy (sparse) · scikit-learn (cosine similarity) · Matplotlib · Seaborn
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 ```
 ├── README.md
 ├── requirements.txt
@@ -54,7 +54,7 @@ Python · pandas · NumPy · SciPy (sparse) · scikit-learn (cosine similarity) 
 └── docs/
 ```
 
-## 🚀 How to Run
+## How to Run
 ```bash
 git clone https://github.com/kndukuba17-hub/B2C-Retail-Analytics-E-Commerce-Recommendation-Engine.git
 cd B2C-Retail-Analytics-E-Commerce-Recommendation-Engine
@@ -63,13 +63,7 @@ pip install -r requirements.txt
 jupyter notebook notebooks/ecommerce_recommendation_engine.ipynb
 ```
 
-## 🗺️ Roadmap
+## Roadmap
 - TF-IDF / BM25 weighting of the user-item matrix.
 - Matrix factorisation (implicit ALS) as a stronger benchmark.
 - Blend CF with a popularity/content fallback to handle cold-start.
-
----
-### 🎤 Interview talking points
-- *"How do you evaluate a recommender without labels?"* Temporal split — similarities from the past, scored against customers' *actual* future purchases (precision@k / recall@k / hit-rate).
-- *"Why compare to popularity?"* It's the honest baseline; a recommender that can't beat best-sellers adds no value. Mine beats it ~1.5×.
-- *"Cold-start?"* CF needs history — fall back to popularity/content for new users and products.
